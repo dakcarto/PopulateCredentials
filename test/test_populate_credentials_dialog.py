@@ -9,7 +9,7 @@
 """
 
 __author__ = 'lshaffer@boundlessgeo.com'
-__date__ = '2014-11-05'
+__date__ = '2014-10-31'
 __copyright__ = 'Copyright 2014, Larry Shaffer/Boundless Spatial Inc.'
 
 import unittest

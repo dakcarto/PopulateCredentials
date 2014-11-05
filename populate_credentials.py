@@ -5,7 +5,7 @@
                                  A QGIS plugin
  Plugin to populate existing credentials into authentication database
                               -------------------
-        begin                : 2014-11-05
+        begin                : 2014-10-31
         git sha              : $Format:%H$
         copyright            : (C) 2014 by Larry Shaffer/Boundless Spatial Inc.
         email                : lshaffer@boundlessgeo.com
@@ -23,7 +23,7 @@
 from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication
 from PyQt4.QtGui import QAction, QIcon
 # Initialize Qt resources from file resources.py
-import resources_rc
+#import resources_rc
 # Import the code for the dialog
 from populate_credentials_dialog import PopulateCredentialsDialog
 import os.path
@@ -83,18 +83,17 @@ class PopulateCredentials:
         # noinspection PyTypeChecker,PyArgumentList,PyCallByClass
         return QCoreApplication.translate('PopulateCredentials', message)
 
-
     def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
+            self,
+            icon_path,
+            text,
+            callback,
+            enabled_flag=True,
+            add_to_menu=True,
+            add_to_toolbar=True,
+            status_tip=None,
+            whats_this=None,
+            parent=None):
         """Add a toolbar icon to the InaSAFE toolbar.
 
         :param icon_path: Path to the icon for this action. Can be a resource
@@ -167,7 +166,6 @@ class PopulateCredentials:
             callback=self.run,
             parent=self.iface.mainWindow())
 
-
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
         for action in self.actions:
@@ -175,7 +173,6 @@ class PopulateCredentials:
                 self.tr(u'&Populate Credentials'),
                 action)
             self.iface.removeToolBarIcon(action)
-
 
     def run(self):
         """Run method that performs all the real work"""

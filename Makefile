@@ -3,7 +3,7 @@
 #
 # Plugin to populate existing credentials into authentication database
 #							 -------------------
-#		begin				: 2014-11-05
+#		begin				: 2014-10-31
 #		git sha				: $Format:%H$
 #		copyright			: (C) 2014 by Larry Shaffer/Boundless Spatial Inc.
 #		email				: lshaffer@boundlessgeo.com
