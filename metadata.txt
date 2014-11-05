@@ -11,7 +11,7 @@ name=Populate Credentials
 qgisMinimumVersion=2.0
 description=Plugin to populate existing credentials into authentication database
 version=0.1
-author=Larry Shaffer / Boundless Spatial Inc.
+author=Larry Shaffer/Boundless Spatial Inc.
 email=lshaffer@boundlessgeo.com
 
 # End of mandatory metadata

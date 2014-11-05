@@ -5,7 +5,7 @@
 #							 -------------------
 #		begin				: 2014-11-05
 #		git sha				: $Format:%H$
-#		copyright			: (C) 2014 by Larry Shaffer / Boundless Spatial Inc.
+#		copyright			: (C) 2014 by Larry Shaffer/Boundless Spatial Inc.
 #		email				: lshaffer@boundlessgeo.com
 # ***************************************************************************/
 #
