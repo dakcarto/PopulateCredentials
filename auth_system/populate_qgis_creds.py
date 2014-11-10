@@ -1,5 +1,12 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-"""Pre-populate QGI authentication database with entries
+"""Pre-populate QGIS authentication database with user configs and (optionally)
+their associated network resources.
+
+Script requires the follow environment variables to be set:
+  PYTHONHOME <-- path to any custom Python Home
+  PYTHONPATH <-- path to custom Python site-packages or QGIS python directory
+  QGIS_PREFIX_PATH <-- path to QGIS install directory
 
 NOTE: this script needs adjusted, or rewritten, relative to the desired result
 and the existing authentication requirements for the network or user.
@@ -12,7 +19,8 @@ resources, using existing PKI credentials, which may be passphrase-protected.
 By default QGIS works with the OpenSSL key stores. On Windows, you can try using
 the `wincertstore` package to retrieve existing client certs, via OIDs for
 enhanced key usages like CLIENT_AUTH, then export those to PEM or PKCS#12
-format. See: https://pypi.python.org/pypi/wincertstore
+format, IF such store entries are exportable.
+See: https://pypi.python.org/pypi/wincertstore
 
 .. note:: This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,6 +35,7 @@ __revision__ = '$Format:%H$'
 
 import os
 import sys
+import argparse
 import tempfile
 
 from qgis.core import (
@@ -43,9 +52,33 @@ from PyQt4.QtGui import *
 
 HOME = os.path.expanduser('~')
 USER = os.path.split(HOME)[-1]
-PKIDATA = os.path.join(HOME, 'PKI')
+PKIDATA = os.path.join(HOME, 'PKI')  # pre-defined default location
 
-if __name__ == '__main__':
+
+def main(user='', masterpass='', pkidir=''):
+    if not user or not pkidir:
+        print 'Missing parameters for user or pkidir'
+        print '  user: {0}'.format(user)
+        print '  pkidir: {0}'.format(pkidir)
+        sys.exit(1)
+
+    # Get user's pre-defined QGIS master password.
+    # This can be done in a variety of ways, depending upon user auth
+    # systems (queried from LDAP, etc.), using a variety of Python packages.
+    # As an example, we could hard-code define it as a standard password that
+    # must be changed later by user, OR if we know the user's defined password.
+    #masterpass = some_user_query_function(user)
+
+    if not masterpass:
+        print 'Master password must be defined'
+        sys.exit(1)
+
+    print 'Setting authentication config using:'
+    print '  user: {0}'.format(user)
+    print '  master pass: {0}'.format(masterpass)
+    print '  pkidir: {0}'.format(pkidir)
+
+    # instantiate QGIS
     qgsapp = QgsApplication(sys.argv, True)
 
     # These are for referencing the correct QSettings for the QGIS app
@@ -77,20 +110,13 @@ if __name__ == '__main__':
     print authm.authenticationDbPath()
 
     # Define pool of users and loop through them, or use the current user.
-    # USERS = ["user"]
-    # for user in USERS:
-
-    # Get user's pre-defined QGIS master password.
-    # This can be done in a variety of ways, depending upon user auth
-    # systems, queried from LDAP, etc., using a variety of Python packages.
-    # As an example, we hard-code define it as a standard password that must
-    # be changed later by the user, OR if we know the user's defined password.
-    mpass = 'password'
+    #users = ["user"]
+    #for user in users:
 
     # Set master password for QGIS and (optionally) store it in qgis-auth.db.
     # This also verifies the set password against by comparing password
     # against its derived hash stored in auth db.
-    if not authm.setMasterPassword(mpass, True):
+    if not authm.setMasterPassword(masterpass, True):
         print 'Failed to verify or store/verify password'
         sys.exit(1)
 
@@ -98,7 +124,7 @@ if __name__ == '__main__':
     # encrypt and store authentication configurations.
     # There are 3 configurations that can be stored (as of Nov 2014), and
     # examples of their initialization are in the unit tests for
-    # QGIS-with-PKI source tree (test_qgsauthsystem.py).
+    # QGIS-with-PKI source tree (test_qgsauthsystem_api-sample.py).
 
     # Add authentication configuration.
     # You can add as many auth configs as needed, but only one can be linked
@@ -107,9 +133,8 @@ if __name__ == '__main__':
     # config and linking it to multiple custom server configs, representing
     # different OWS services located at the same domain.
 
-    # NOTE: PKI file components need to *already* exists on the filesystem in a
+    # NOTE: PKI file components need to *already* exist on the filesystem in a
     # location that doesn't change, as their paths are stored in the auth db.
-    # These particular components are from the test data samples.
 
     # # Basic configuration
     # configname = 'My Basic Config'
@@ -117,7 +142,7 @@ if __name__ == '__main__':
     # config.setName(kind)
     # config.setUri('https://localhost:8443')
     # config.setUsername('username')
-    # config.setPassword('password')
+    # config.setPassword('password')  # will need queried or set per user
     # config.setRealm('Realm')
 
     # ^^  OR  vv
@@ -127,10 +152,10 @@ if __name__ == '__main__':
     # config = QgsAuthConfigPkiPaths()
     # config.setName(configname)
     # config.setUri('https://localhost:8443')
-    # config.setCertId(os.path.join(PKIDATA, 'rod_cert.pem'))
-    # config.setKeyId(os.path.join(PKIDATA, 'rod_key.pem'))
-    # config.setKeyPassphrase('')
-    # config.setIssuerId(os.path.join(PKIDATA, 'ca.pem'))
+    # config.setCertId(os.path.join(pkidir, '{0}_cert.pem'.format(user)))
+    # config.setKeyId(os.path.join(pkidir, '{0}_key.pem'.format(user)))
+    # config.setKeyPassphrase('')  # will need queried and set per user
+    # config.setIssuerId(os.path.join(pkidir, 'ca.pem'))
     # config.setIssuerSelfSigned(True)
 
     # ^^  OR  vv
@@ -140,13 +165,14 @@ if __name__ == '__main__':
     config = QgsAuthConfigPkiPkcs12()
     config.setName(configname)
     config.setUri('https://localhost:8443')
-    config.setBundlePath(os.path.join(PKIDATA, 'rod.p12'))
-    config.setBundlePassphrase('password')
-    config.setIssuerPath(os.path.join(PKIDATA, 'ca.pem'))
+    config.setBundlePath(os.path.join(pkidir, '{0}.p12'.format(user)))
+    config.setBundlePassphrase('password')  # will need queried and set per user
+    config.setIssuerPath(os.path.join(pkidir, 'ca.pem'))
     config.setIssuerSelfSigned(True)
 
     # Securely store the config in database (encrypted with master password)
-    if not authm.storeAuthenticationConfig(config):
+    res = authm.storeAuthenticationConfig(config)
+    if not res[0]:
         print 'Failed to store {0} config'.format(configname)
         sys.exit(1)
 
@@ -222,3 +248,47 @@ if __name__ == '__main__':
 
     # Optional settings for WFS (these are the defaults)
     settings.setValue(connkey + '/referer', '')
+
+
+def arg_parser():
+    parser = argparse.ArgumentParser(
+        description="""\
+            Script will work for current or defined user, with a defined
+            password, and generate an initial qgis-auth.db file, or use an
+            existing one, for user's QGIS install, which will be pre-populated
+            with configurations to known network resources, using existing PKI
+            credentials, which may be passphrase-protected.
+            """
+    )
+    parser.add_argument(
+        '-u', '--user', dest='user', metavar='username',
+        default=USER,
+        help='QGIS user\'s name'
+    )
+    parser.add_argument(
+        '-m', '--masterpass', dest='mpass', metavar='master-password',
+        help='QGIS user\'s master password'
+    )
+    parser.add_argument(
+        '-d', '--pki-dir', dest='pkidir', metavar='directory-path',
+        default=PKIDATA,
+        help='User\'s PKI components directory path'
+    )
+    return parser
+
+if __name__ == '__main__':
+    # get defined args
+    args = arg_parser().parse_args()
+
+    if not args.pkidir:
+        print 'PKI components directory not defined.'
+        sys.exit(1)
+
+    pkid = os.path.realpath(args.pkidir)
+    if not os.path.isabs(pkid) or not os.path.exists(pkid):
+        print 'PKI components directory not resolved to existing absolute path.'
+        sys.exit(1)
+
+    main(user=args.user, masterpass=args.mpass, pkidir=pkid)
+
+    sys.exit(0)
