@@ -1,5 +1,5 @@
 @echo off
-set OSGEO4W_ROOT="C:\Program Files (x86)\Boundless\QGIS\qgis"
+set OSGEO4W_ROOT=C:\progra~2\Boundless\QGIS\qgis
 call "%OSGEO4W_ROOT%"\bin\o4w_env.bat
 call "%OSGEO4W_ROOT%"\apps\grass\grass-6.4.3\etc\env.bat
 @echo off
@@ -11,4 +11,4 @@ rem Set VSI cache to be used as buffer, see #6448
 set VSI_CACHE=TRUE
 set VSI_CACHE_SIZE=1000000
 
-python.exe "%~dp0"\populate_qgis_creds.py %*
+cmd /k python.exe "%~dp0\populate_qgis_creds.py" %*
