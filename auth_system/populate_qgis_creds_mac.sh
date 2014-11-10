@@ -1,5 +1,9 @@
 #!/bin/bash
 
+SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd -P)
+
+### First Set Up Environment ###
+
 # For Boundless installations
 BQGIS=/Applications/QGIS.app/Contents
 
@@ -26,3 +30,8 @@ export PYTHONPATH=${BQGIS}/Resources/python:/Library/Python/2.7/site-packages:$P
 # export GDAL_DRIVER_PATH=/usr/local/lib/gdalplugins
 # export GRASS_PREFIX=/usr/local/opt/grass-64/grass-6.4.4
 # export OSG_LIBRARY_PATH=/usr/local/lib/osgPlugins-3.2.0
+
+### Then, Run Script ###
+
+# Make sure script is set executable by user
+${SCRIPT_DIR}/populate_qgis_creds.py "$@"
