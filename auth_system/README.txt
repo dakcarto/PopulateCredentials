@@ -1,8 +1,8 @@
 Pre-population of Authentication Configurations
------------------------------------------------
+===============================================
 
 Contents of directory
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 - populate_qgis_creds.py. Python script that will work for the current user,
   with a known password, and generate an initial qgis-auth.db file, or use an
@@ -14,11 +14,30 @@ Contents of directory
   result and the existing authentication requirements for the network or user.
 
 - populate_qgis_creds_mac.sh. Wrapper shell script for setting appropriate
-  environment variables for Mac OS X, then running populate_qgis_creds.py.
+  environment variables for Mac OS X, then running `populate_qgis_creds.py`.
 
 - populate_qgis_creds_win.bat. Wrapper shell script for setting appropriate
   environment variables for Windows OS (64-bit), then running
-  populate_qgis_creds.py.
+  `populate_qgis_creds.py`.
+
+- populate_qgis_creds_user.py. Python script that will *interact* with the
+  current user, asking for a master authentication password, and generate an
+  initial qgis-auth.db file, or use an existing one, for their QGIS install,
+  which will be pre-populated with configurations to known network resources,
+  using existing PKI credentials, which may be passphrase-protected.
+
+  IMPORTANT: the script needs adjusted, or rewritten, relative to the desired
+  result and the existing authentication requirements for the network or user.
+
+- populate_qgis_creds_mac_user-[app|script].sh. Wrapper shell script for
+  `populate_qgis_creds_user.py` for setting appropriate environment variables
+  for Mac OS X, then either launching QGIS and executing script within it, or
+  executing script directly with standalone, background QGIS.
+
+- populate_qgis_creds_win_user-[app|script].bat. Wrapper shell script for
+  `populate_qgis_creds_user.py` for setting appropriate environment variables
+  for Windows OS (64-bit), then either launching QGIS and executing script
+  within it, or executing script directly with standalone, background QGIS.
 
 - pki_sample_data. Same test data as for QGIS core PKI integration.
 
@@ -32,12 +51,16 @@ Contents of directory
 Script Usage
 ------------
 
-This is example output from running script on Mac. Similar results will be
-displayed on Windows, though the populate_qgis_creds_win.bat wrapper will need
-to be used from within a cmd.exe session.
+Whether on Mac or Windows, please open and review the Python and wrapper scripts
+to ensure the set environment variables and script configuration match those of
+your Boundless QGIS installation.
 
-Whether on Mac or Windows, please open and review the wrapper scripts to ensure
-the set environment variables match those of your Boundless QGIS installation.
+populate_qgis_creds.py
+......................
+
+This is example output from running script on Mac. Similar results will be
+displayed on Windows, though the `populate_qgis_creds_win.bat` wrapper will need
+to be used from within a cmd.exe session.
 
 Output from populate_qgis_creds.sh -h ::
 
@@ -72,6 +95,25 @@ Example ::
   settings.fileName(): /Users/user/Library/Preferences/org.qgis.QGIS2.plist
   settings.organizationName(): qgis.org
   settings.applicationName(): QGIS2
+
+The script has descriptions of how to customize it within the in-code comments.
+
+populate_qgis_creds_user.py
+...........................
+
+Example commands for running script on Windows. On Mac the
+`populate_qgis_creds_mac_user-[app|script].sh` wrapper should be used instead.
+
+This script *requires* user interaction, since it uses Python bindings related
+to some authentication system GUI elements of QGIS.
+
+Run the appropriate .bat file directly from the file browser, by
+double-clicking, relative to whether you want the dialogs that interact with the
+user to be within the QGIS desktop GUI or standalone::
+
+  populate_qgis_creds_win_user-app.bat
+  - OR -
+  populate_qgis_creds_win_user-script.bat
 
 The script has descriptions of how to customize it within the in-code comments.
 
