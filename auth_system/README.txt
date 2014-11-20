@@ -29,6 +29,9 @@ Contents of directory
   IMPORTANT: the script needs adjusted, or rewritten, relative to the desired
   result and the existing authentication requirements for the network or user.
 
+- populate_qgis_creds_user.png. Compilation PNG of sample dialogs the user will
+  see when using `populate_qgis_creds_user.py`.
+
 - populate_qgis_creds_mac_user-[app|script].sh. Wrapper shell script for
   `populate_qgis_creds_user.py` for setting appropriate environment variables
   for Mac OS X, then either launching QGIS and executing script within it, or
