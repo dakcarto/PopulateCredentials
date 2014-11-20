@@ -40,10 +40,16 @@ from qgis.utils import *
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+SCRIPT_TITLE = "PKI Setup Script"
 
-def msgbox(msg):
-    # noinspection PyTypeChecker,PyArgumentList
-    QMessageBox.warning(None, "PKI Setup Script", msg)
+
+def msgbox(msg, kind='warn'):
+    if kind == 'warn':
+        # noinspection PyTypeChecker,PyArgumentList
+        QMessageBox.warning(None, SCRIPT_TITLE, msg)
+    elif kind == 'info':
+        # noinspection PyTypeChecker,PyArgumentList
+        QMessageBox.information(None, SCRIPT_TITLE, msg)
 
 
 def main():
@@ -76,6 +82,7 @@ def main():
     dlg = QgsDialog(mw)
     """:type: QgsDialog"""
     dlg.setMinimumSize(QSize(480, 480))
+    dlg.setWindowTitle(SCRIPT_TITLE)
     txtedit = QTextEdit(dlg)
     txtedit.setReadOnly(True)
     txtedit.setText("""
@@ -217,7 +224,8 @@ def main():
 
     msgbox("The authentication configuration was saved and has been assigned "
            "to the following server configurations:\n\n{0}"
-           .format("\n".join(connections)))
+           .format("\n".join(connections)),
+           kind='info')
 
 
 if __name__ == '__main__':
